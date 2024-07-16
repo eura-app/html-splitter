@@ -2,9 +2,9 @@
 
 namespace David\HtmlSplitter\Tests;
 
+use David\HtmlSplitter\HtmlSplitterServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use David\HtmlSplitter\HtmlSplitterServiceProvider;
 
 class TestCase extends Orchestra
 {

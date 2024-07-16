@@ -2,8 +2,6 @@
 
 use David\HtmlSplitter\HtmlSplitter;
 
-
-
 it('can test', function () {
     expect(true)->toBeTrue();
 });
@@ -14,7 +12,6 @@ it('it is a array', function () {
     expect($htmlSplitter->fromHtml('Hello, David!'))->toBeArray();
 });
 
-
 function checkArrayItemsLength(array $array, int $maxLength): bool
 {
     foreach ($array as $item) {
@@ -22,6 +19,7 @@ function checkArrayItemsLength(array $array, int $maxLength): bool
             return false;
         }
     }
+
     return true;
 }
 
@@ -30,7 +28,7 @@ it('verifies all items in the array have a maximum length of 5 characters', func
     $maxLength = 5;
     $array = $htmlSplitter->fromHtml(html: 'Hello, David!', max_characters_per_row: $maxLength);
     var_dump($array, 111);
-    expect(checkArrayItemsLength($array, $maxLength))->toBeTrue();;
+    expect(checkArrayItemsLength($array, $maxLength))->toBeTrue();
 });
 
 it('fails when an item in the array has more than 5 characters', function () {

@@ -2,9 +2,9 @@
 
 namespace David\HtmlSplitter;
 
+use David\HtmlSplitter\Commands\HtmlSplitterCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use David\HtmlSplitter\Commands\HtmlSplitterCommand;
 
 class HtmlSplitterServiceProvider extends PackageServiceProvider
 {
