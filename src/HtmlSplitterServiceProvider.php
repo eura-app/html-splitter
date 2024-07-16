@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton;
+namespace David\HtmlSplitter;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use VendorName\Skeleton\Commands\SkeletonCommand;
+use David\HtmlSplitter\Commands\HtmlSplitterCommand;
 
-class SkeletonServiceProvider extends PackageServiceProvider
+class HtmlSplitterServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {
@@ -16,10 +16,10 @@ class SkeletonServiceProvider extends PackageServiceProvider
          * More info: https://github.com/spatie/laravel-package-tools
          */
         $package
-            ->name('skeleton')
+            ->name('html-splitter')
             ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_migration_table_name_table')
-            ->hasCommand(SkeletonCommand::class);
+            // ->hasViews()
+            // ->hasMigration('create_html_splitter_table')
+            ->hasCommand(HtmlSplitterCommand::class);
     }
 }

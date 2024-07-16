@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace David\HtmlSplitter\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class HtmlSplitterCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'html-splitter';
 
     public $description = 'My command';
 
