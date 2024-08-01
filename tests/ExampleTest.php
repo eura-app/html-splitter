@@ -2,7 +2,6 @@
 
 use David\HtmlSplitter\HtmlSplitter;
 
-
 it('does not split the html elements but keeps the html', function () {
     $text = '<h2>A Pastorala Ode to the Netherlands w O land of tulips and zephyrs mild</h2>
             <div><br></div>
