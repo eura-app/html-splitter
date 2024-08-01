@@ -117,9 +117,9 @@ class HtmlSplitter
 
     public function addUlTags($text)
     {
-        // Voeg <ul> toe voor de eerste <li>
+        // add <ul> to the first <li>
         $text = preg_replace('/(<li>)/', '<ul>$1', $text, 1);
-        // Voeg </ul> toe na de laatste </li>
+        // Voeg </ul> to the last </li>
         $text = preg_replace('/(<\/li>)(?!.*<\/li>)/', '$1</ul>', $text);
 
         return $text;
