@@ -1,6 +1,7 @@
 <?php
 
 use David\HtmlSplitter\HtmlSplitter;
+
 //
 //it('can test', function () {
 //    expect(true)->toBeTrue();
@@ -47,7 +48,7 @@ use David\HtmlSplitter\HtmlSplitter;
 //    expect(checkArrayItemsLength($array, $maxLength))->toBeTrue();
 //});
 it('does not split the html elements but keeps the html', function () {
-$text = "<h2>A Pastorala Ode to the Netherlands w O land of tulips and zephyrs mild</h2>
+    $text = '<h2>A Pastorala Ode to the Netherlands w O land of tulips and zephyrs mild</h2>
             <div><br></div>
             <div>O land of tulips and zephyrs mild, Where doth the rivers’ gentle flow abide, Through pastures green and valleys undefiled, ‘Neath Heaven’s vault where golden light doth glide.</div>
             <div><br></div>
@@ -59,9 +60,9 @@ $text = "<h2>A Pastorala Ode to the Netherlands w O land of tulips and zephyrs m
             <div><br></div>
             <div>So let us raise our hearts in joyous praise, To thee,</div>
             <ul><li>So let us raise our hearts in joyous praise</li><li>For in thy fertile bosom’s warm embrace</li><li>So let us raise our hearts in joyous praise</li><li>For in thy fertile bosom’s warm embrace</li></ul>
-            <div>O Netherlands, our pride and cheer, For in thy fertile bosom’s warm embrace, Resides a heritage we hold most dear. </div>";
+            <div>O Netherlands, our pride and cheer, For in thy fertile bosom’s warm embrace, Resides a heritage we hold most dear. </div>';
 
-    $htmlSplitter = new HtmlSplitter();
+    $htmlSplitter = new HtmlSplitter;
     $maxLength = 5;
     $array = $htmlSplitter->generate($text, $maxLength, 20);
     var_dump($array);
