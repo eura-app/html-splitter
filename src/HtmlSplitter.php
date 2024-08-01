@@ -4,66 +4,122 @@ namespace David\HtmlSplitter;
 
 class HtmlSplitter
 {
-    public function fromHtml(string $html, int $max_characters_per_row = 99999): array
+    public function generate(string|null $text, int $amount_rows = 40, int $characters_per_row = 50): array
     {
-        return $this->splitHtmlByLength($html, $max_characters_per_row);
+        if (!$text) {
+            return [];
+        };
+        $text = str_replace('</div>', '', $text);
+        $array = explode('<div>', $text);
+
+
+        $rows = $this->splitSentencesByMaxCharacters($array, $characters_per_row);
+
+        $new_rows = [];
+        foreach ($rows as $row) {
+            $value = trim($row);
+            if (!empty($value)) {
+                $new_rows[] = $value;
+            }
+        }
+        $rows = $new_rows;
+
+
+        $blocks = $this->mergeRowsByMaxAmountRows($rows, $amount_rows);
+        if (!$blocks) {
+            return [];
+        }
+        //remove the first <br> tag
+        $blocks[0] = (preg_replace('/^(?:<br\s*\/?>\s*)+/', '', $blocks[0]));
+
+        // array_filter to remove empty blocks
+        return array_values(array_filter($blocks));
     }
 
-    private function splitHtmlByLength($html, $length)
+    private function splitSentencesByMaxCharacters($rows, $characters_per_row): array
     {
-        $dom = new \DOMDocument();
+        $new_rows = [];
+        foreach ($rows as $row) {
 
-        // Foutmeldingen inschakelen tijdens het laden van HTML
-        libxml_use_internal_errors(true);
-        $dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        libxml_clear_errors();
+            $parts = preg_split('/(<ul>.*<\/ul>)/sU', $row, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
-        // Controleer of er een body-element is
-        $body = $dom->getElementsByTagName('body')->item(0);
-        $nodes = $body ? $body->childNodes : $dom->childNodes;
 
-        $chunks = [];
-        $currentChunk = '';
-        $currentLength = 0;
+          foreach ($parts as $part) {
+                if (!str_starts_with($part, "<ul>")) {
+                    $text = wordwrap($part, $characters_per_row);
+                    $lines = explode("\n", $text);
+                }else{
+                    $lis = preg_split('/(<li>.*<\/li>)/sU', $part, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+                    //remove the <ul> opening and closing (we will add them later )
+                    array_pop($lis);
+                    array_shift($lis);
 
-        foreach ($nodes as $child) {
-            $this->processNode($child, $chunks, $currentChunk, $currentLength, $length);
+                    $lines = $lis;
+                }
+
+                $new_rows = array_merge($new_rows, $lines);
+
+            }
         }
-
-        if ($currentLength > 0) {
-            $chunks[] = $currentChunk;
-        }
-
-        return $chunks;
+        return $new_rows;
     }
 
-    private function processNode($node, &$chunks, &$currentChunk, &$currentLength, $maxLength)
+    private function mergeRowsByMaxAmountRows(array $rows, int $amount_rows): array
     {
-        if ($node->nodeType == XML_TEXT_NODE) {
-            $text = $node->textContent;
-            for ($i = 0; $i < strlen($text); $i++) {
-                $currentChunk .= $text[$i];
-                $currentLength++;
-                if ($currentLength == $maxLength) {
-                    $chunks[] = $currentChunk;
-                    $currentChunk = '';
-                    $currentLength = 0;
+        $blocks = [];
+
+        while (count($rows) > 0) {
+            $latest_br = 0;
+            if (count($rows) <= $amount_rows) {
+                // Add the final data to the end of the array
+                $blocks[]['text'] = str_replace("<br>", '', implode('<br/>', $rows));
+                break;
+            }
+            foreach ($rows as $index => $row) {
+                if ($row === "<br>") {
+                    //Plus 1 so we also add the <br> to the block
+                    $latest_br = $index + 1;
+                }
+                if ($index === $amount_rows) {
+                    break;
                 }
             }
-        } elseif ($node->nodeType == XML_ELEMENT_NODE) {
-            $html = $node->ownerDocument->saveHTML($node);
-            $currentChunk .= $html;
-            $currentLength += strlen($node->textContent);
-
-            if ($currentLength >= $maxLength) {
-                $chunks[] = $currentChunk;
-                $currentChunk = '';
-                $currentLength = 0;
+            if ($latest_br === 0) {
+                $latest_br = $amount_rows;
             }
-        }
+            $current_block = array_splice($rows, 0, $latest_br);
 
-        foreach ($node->childNodes as $child) {
-            $this->processNode($child, $chunks, $currentChunk, $currentLength, $maxLength);
+            // Remove the last <br>
+            if ($current_block[count($current_block) - 1] === '<br>') {
+                array_pop($current_block);
+            }
+
+            $text = "";
+            foreach ($current_block as $index => $current){
+                if($index === count($current_block) -1){
+                    $text .= $current;
+                    continue;
+                }
+                if(str_ends_with($current, "</li>")){
+                    $text .= $current;
+                    continue;
+                }
+                $text .= $current . "<br/>";
+            }
+            $blocks[]['text'] = str_replace("<br>", '', $text);
         }
+        foreach ($blocks as $key => $block){
+            $blocks[$key]['text'] = $this->addUlTags($block['text']);
+        }
+        return $blocks;
     }
+    function addUlTags($text) {
+        // Voeg <ul> toe voor de eerste <li>
+        $text = preg_replace('/(<li>)/', '<ul>$1', $text, 1);
+        // Voeg </ul> toe na de laatste </li>
+        $text = preg_replace('/(<\/li>)(?!.*<\/li>)/', '$1</ul>', $text);
+
+        return $text;
+    }
+
 }
